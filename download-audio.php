@@ -37,7 +37,7 @@ foreach ($urls as $url) {
       echo "Downloading $audio...\n"; 
       $a = file_get_contents($audio);
       echo "Writing file $audio to disk...\n"; 
-      file_put_contents($outputDir . $newDate . '-' . str_replace(['-',], [' '], $title) . '.mp3', $a);
+      file_put_contents($outputDir . $newDate . '-' . str_replace(['-', ' '], ['_', '_'], $title) . '.mp3', $a);
       echo "Done!\n";
     }
   }

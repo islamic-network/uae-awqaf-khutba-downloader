@@ -37,7 +37,7 @@ foreach ($urls as $url) {
       echo "Downloading $pdf...\n"; 
       $a = file_get_contents($pdf);
       echo "Writing file $pdf to disk...\n";
-      file_put_contents($outputDir . $newDate . '-' . str_replace(['-',], [' '], $title) . '.pdf', $a);
+      file_put_contents($outputDir . $newDate . '-' . str_replace(['-', ' '], ['_', '_'], $title) . '.pdf', $a);
       echo "Done!\n";
     }
   }
