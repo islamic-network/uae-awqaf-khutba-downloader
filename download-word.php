@@ -7,7 +7,7 @@
 
 $file = 'months/all.txt';
 $baseUrl = 'https://www.awqaf.gov.ae';
-$outputDir = "/mnt/c/Users/meezaan/Desktop/khutbas/";
+$outputDir = "downloads/doc/";
 $urls = explode("\n", file_get_contents($file));
 
 foreach ($urls as $url) {
@@ -37,7 +37,7 @@ foreach ($urls as $url) {
       echo "Downloading $word...\n"; 
       $a = file_get_contents($word);
       echo "Writing file $word to disk...\n"; 
-      file_put_contents($outputDir . $newDate . '-' . $title . '.doc', $a);
+      file_put_contents($outputDir . $newDate . '-' . str_replace(['-',], [' '], $title) . '.doc', $a);
       echo "Done!\n";
     }
   }

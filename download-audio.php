@@ -5,9 +5,9 @@
 // Audio Regex: https:\/\/m.awqaf.ae\/Uploads\/AudioFridaySermons\/[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]-[a-z][a-z].mp3
 
 
-$file = 'months/2022.txt';
+$file = 'months/all.txt';
 $baseUrl = 'https://www.awqaf.gov.ae';
-$outputDir = "/mnt/c/Users/meezaan/Desktop/khutbas/";
+$outputDir = "downloads/mp3/";
 $urls = explode("\n", file_get_contents($file));
 
 foreach ($urls as $url) {
@@ -28,10 +28,16 @@ foreach ($urls as $url) {
       $datemp3 = $parts[$tParts-1];
       $dx = explode('.', $datemp3);
       $date = $dx[0];
+      $dt = explode("-", $date);
+      $day = $dt[0];
+      $month = $dt[1];
+      $year = $dt[2];
+      $language = $dt[3];
+      $newDate = $year . '-' . $month . '-' . $day . '-' . $language;
       echo "Downloading $audio...\n"; 
       $a = file_get_contents($audio);
       echo "Writing file $audio to disk...\n"; 
-      file_put_contents($outputDir . $date . '-' . $title . '.mp3', $a);
+      file_put_contents($outputDir . $newDate . '-' . str_replace(['-',], [' '], $title) . '.mp3', $a);
       echo "Done!\n";
     }
   }
