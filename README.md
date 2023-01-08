@@ -3,6 +3,10 @@
 The UAE Awqaf website's Friday Sermon Archive is down quite often, and there is no programmtic way to interact with it to get the Khutba files. This
 utility makes it possible to download the files and add them to the Islamic Network CDN (potentially, right now they just sit on OneDrive).
 
+# Just want the files via the CDN
+
+Here's a JSON map of what lives on the CDN.
+
 ## How to use It
 
 This utility requires PHP 8.0+ (at least that's what it has been tested with) and composer.
@@ -25,9 +29,16 @@ popup select plain text where URLs appear on each line and copy these URLs using
 9. Open ```downloads.php``. On line 8, change the name of the file to match the txt file you saved in step 8.
 10. In line 10, please change the path where you want the files to be saved on your PC (or mac or server or whatever you are using).
 11. Save the file.
-12. Run ```download.php``` and watch the commentary.
+12. Run ```download-audio.php``` and watch the commentary.
+13. Repeat for doc and pdf versions, or run ```download.sh``` to get everyting, but be patient.
 
 ## Find any issues?
 
 Please raise a PR to fix if you can or post on https://community.islamic.network for support.
 
+## Legal and Disclaimer
+The license for these scripts is GNU LGPL v3.
+
+**Please note that where ever you download, view and/or store these khutbas, the copyright 
+remains with and belongs to the General Authority of Islamic Affairs and Endowments, UAE. The 
+authenticity may be verified using their document verifier at https://www.awqaf.gov.ae/en/Pages/verifydocument.aspx.**
