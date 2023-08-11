@@ -5,7 +5,7 @@
 // Audio Regex: https:\/\/m.awqaf.ae\/Uploads\/AudioFridaySermons\/[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]-[a-z][a-z].mp3
 
 
-$file = 'months/all.txt';
+$file = 'months/2023-until-july.txt';
 $baseUrl = 'https://www.awqaf.gov.ae';
 $outputDir = "downloads/mp3/";
 $urls = explode("\n", file_get_contents($file));

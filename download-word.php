@@ -5,7 +5,7 @@
 // word Regex: https:\/\/m.awqaf.ae\/uploads\/Friday_speach\/[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]-[a-z][a-z].doc
 
 
-$file = 'months/all.txt';
+$file = 'months/2023-until-july.txt';
 $baseUrl = 'https://www.awqaf.gov.ae';
 $outputDir = "downloads/doc/";
 $urls = explode("\n", file_get_contents($file));
