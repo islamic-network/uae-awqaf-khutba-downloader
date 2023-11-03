@@ -26,7 +26,7 @@ if (!empty($matches[0])) {
     file_put_contents("$tempDir/$file", implode("\n", $matches[0]));
     // Also update all.txt with the matches.
     echo "Updating all.txt with the matches.\n";
-    file_put_contents("months/all.txt", implode("\n", $matches[0]), FILE_APPEND);
+    file_put_contents("months/all.txt", "\n" . implode("\n", $matches[0]), FILE_APPEND);
     // Step 4: Download all the audio files.
     echo "Download all the audio files.\n";
     downloadAudio("$tempDir/$file");
