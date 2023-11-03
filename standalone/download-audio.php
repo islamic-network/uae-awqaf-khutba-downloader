@@ -4,11 +4,9 @@
 // Title Regex: document.title = '(.*)'
 // Audio Regex: https:\/\/m.awqaf.ae\/Uploads\/AudioFridaySermons\/[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]-[a-z][a-z].mp3
 
-function downloadAudio(string $tempFile): void
-{
-    $file = $tempFile;
+    $file = '../months/2023-july-october.txt';
     $baseUrl = 'https://www.awqaf.gov.ae';
-    $outputDir = "downloads/mp3/";
+    $outputDir = "../downloads/mp3/";
     $urls = explode("\n", file_get_contents($file));
 
     foreach ($urls as $url) {
@@ -43,5 +41,5 @@ function downloadAudio(string $tempFile): void
             }
         }
     }
-}
+
 

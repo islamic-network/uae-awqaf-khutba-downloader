@@ -4,12 +4,9 @@
 // Title Regex: document.title = '(.*)'
 // pdf Regex: https:\/\/m.awqaf.ae\/uploads\/Friday_speach\/[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]-[a-z][a-z].pdf
 
-function downloadPdf(string $tempFile): void
-{
-
-    $file = $tempFile;
+    $file = '../months/2023-july-october.txt';
     $baseUrl = 'https://www.awqaf.gov.ae';
-    $outputDir = "downloads/pdf/";
+    $outputDir = "../downloads/pdf/";
     $urls = explode("\n", file_get_contents($file));
 
     foreach ($urls as $url) {
@@ -44,5 +41,5 @@ function downloadPdf(string $tempFile): void
             }
         }
     }
-}
+
 

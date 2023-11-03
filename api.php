@@ -4,7 +4,7 @@ require_once('vendor/autoload.php');
 // Calculate Fridays
 $given_year = strtotime("1 January 2018");
 $for_start = strtotime('Friday', strtotime("1 January 2018"));
-$for_end = strtotime('+1 year', strtotime("1 January 2022"));
+$for_end = strtotime('+1 year', strtotime("1 January 2027"));
 $fridays = [];
 for ($i = $for_start; $i <= $for_end; $i = strtotime('+1 week', $i)) {
     $fridays[] = date('Y-m-d', $i);
