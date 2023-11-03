@@ -7,7 +7,10 @@ $for_start = strtotime('Friday', strtotime("1 January 2018"));
 $for_end = strtotime('+1 year', strtotime("1 January 2027"));
 $fridays = [];
 for ($i = $for_start; $i <= $for_end; $i = strtotime('+1 week', $i)) {
-    $fridays[] = date('Y-m-d', $i);
+    // if the date is friday add it to the array
+    if (date('l', $i) == 'Friday') {
+        $fridays[] = date('Y-m-d', $i);
+    }
 }
 
 $iteratorMp3 = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('downloads/mp3'));
