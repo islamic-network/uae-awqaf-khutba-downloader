@@ -9,6 +9,12 @@ Here's a JSON map of what lives on the CDN.
 
 ## How to use It
 
+## One script for everything
+
+Just run ```download.sh```. Ensure that in api.php line 52 has all the years api json files need to be recreated.
+
+## Downloading the files
+
 This utility requires PHP 8.0+ (at least that's what it has been tested with) and composer.
 
 You can only download khutbas for one month at a time, technically, and the below process documents how to aggregate that. Unforunately a crawler is
@@ -29,7 +35,7 @@ popup select plain text where URLs appear on each line and copy these URLs using
 9. Open ```downloads.php``. On line 8, change the name of the file to match the txt file you saved in step 8.
 10. In line 10, please change the path where you want the files to be saved on your PC (or mac or server or whatever you are using).
 11. Save the file.
-12. Run ```download-audio.php``` and watch the commentary.
+12. Run ```download-audio.php``` and watch the commentary. Then repeat for pdf and word.
 13. Repeat for doc and pdf versions, or run ```download.sh``` to get everyting, but be patient.
 
 ## Find any issues?
