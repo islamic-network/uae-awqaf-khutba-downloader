@@ -2,6 +2,7 @@
 
 php download.php
 sh upload.sh
+php api.php
 cp -r api/uae-awqaf/* ../sermons.islamic.network/api/uae-awqaf/
 cp -r yaml/uae-awqaf/* ../sermons.islamic.network/_data/uae-awqaf/
 cd ../sermons.islamic.network/api/uae-awqaf/
