@@ -4,7 +4,9 @@ php download.php
 sh upload.sh
 php api.php
 cp -r api/uae-awqaf/* ../sermons.islamic.network/api/uae-awqaf/
+sleep 2
 cp -r yaml/uae-awqaf/* ../sermons.islamic.network/_data/uae-awqaf/
+sleep 2
 cd ../sermons.islamic.network/api/uae-awqaf/
 git add .
 git commit -m "Update API with latest sermons"
