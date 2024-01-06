@@ -34,7 +34,7 @@ prep($docs, 'doc', $fridays, $sermons);
 prep($pdfs, 'pdf', $fridays, $sermons);
 
 $sources = [
-    ['name' => 'General Authority of Islamic Affairs and Endowments, UAE', 'handle' => 'uae-awqaf', 'years' => [2015, 2016, 2018, 2019, 2020, 2021, 2022]]
+    ['name' => 'General Authority of Islamic Affairs and Endowments, UAE', 'handle' => 'uae-awqaf', 'years' => [2015, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024]]
 ];
 $languages  = [
     ['code' => 'ur', 'name' => 'Urdu'],
@@ -52,19 +52,19 @@ foreach($sermons as $year => $type) {
 }
 
 // Normalise
-$years = [2023];
+$years = [2024];
 $months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 
 // Now let's write the files
 // By year.
-mkdir("api/uae-awqaf/");
-mkdir("yaml/uae-awqaf/");
+!is_dir("api/uae-awqaf/") ? mkdir("api/uae-awqaf/"): "";
+!is_dir ("yaml/uae-awqaf/") ? mkdir("yaml/uae-awqaf/") : "";
 foreach ($years as $year) {
-    mkdir("api/uae-awqaf/$year");
-    mkdir("yaml/uae-awqaf/$year");
+    !is_dir("api/uae-awqaf/$year") ? mkdir("api/uae-awqaf/$year") : "";
+    !is_dir("yaml/uae-awqaf/$year") ? mkdir("yaml/uae-awqaf/$year") : "";
     foreach ($months as $month) {
-        mkdir("api/uae-awqaf/$year/$month");
-        mkdir("yaml/uae-awqaf/$year/$month");
+        !is_dir("api/uae-awqaf/$year/$month") ? mkdir("api/uae-awqaf/$year/$month") : "";
+        !is_dir("yaml/uae-awqaf/$year/$month") ? mkdir("yaml/uae-awqaf/$year/$month") : "";
     }
     if (isset($sermons[$year]['friday'])) {
         foreach($sermons[$year]['friday'] as $m => $x) {

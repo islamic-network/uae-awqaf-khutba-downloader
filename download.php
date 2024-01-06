@@ -9,7 +9,7 @@
 // Calculate the date for the current and next Friday.
 $friday = new DateTime('next friday');
 // Or manually specify a friday date.
-// $friday = new DateTime('2023-12-08');
+$friday = new DateTime('2024-01-05');
 $date = $friday->format('d-m-Y');
 
 echo "Checking for " . $friday->format('r') . "...\n";
@@ -20,6 +20,10 @@ $strings_to_check = ['n-ar', '-n-ar' , '-ar', '-ur', '-en'];
 $extensions = ['mp3', 'pdf', 'doc'];
 $outputDir = "downloads/";
 $downloadable  = [];
+
+
+// Get sermon title
+$title = "Allah_charges_no_soul_save_to_its_capacity";
 
 foreach ($baseUrls as $baseUrl) {
     foreach ($strings_to_check as $string) {
@@ -38,6 +42,7 @@ foreach ($baseUrls as $baseUrl) {
 echo "\n" . @implode("\n", $downloadable['mp3']);
 echo "\n" . @implode("\n", $downloadable['doc']);
 echo "\n" . @implode("\n", $downloadable['pdf']);
+echo "\n";
 
 foreach ($downloadable as $extension => $urls) {
     foreach ($urls as $url) {
@@ -49,10 +54,10 @@ foreach ($downloadable as $extension => $urls) {
         $dt = explode("-", $date);
         $day = $dt[0];
         $month = $dt[1];
-        $year = $dt[2];
+        $year = str_replace("n", "", $dt[2]);
         $language = $dt[3];
         $newDate = $year . '-' . $month . '-' . $day . '-' . $language;
-        $downloadName = str_replace("n-", "-", $outputDir . $extension . '/' . $newDate . '.' . $extension);
+        $downloadName =$outputDir . $extension . '/' . $newDate . '-' . $title . '.' . $extension;
         echo "Downloading $url...\n";
         $a = file_get_contents($url);
         echo "Writing file $url to disk at $downloadName...\n";
@@ -62,36 +67,3 @@ foreach ($downloadable as $extension => $urls) {
 }
 
 
-/*
-$url = 'https://www.awqaf.gov.ae/en/Pages/FridaySermonArchive.aspx';
-$tempDir = 'temp/';
-// Step 1: Download markup of current awqaf sermons page.
-echo "Download markup of current awqaf sermons page.\n";
-$page = file_get_contents($url);
-// Step 2: Extract all links from the markup.
-echo "Extract all links from the markup.\n";
-preg_match_all("|/en/Pages/FridaySermonDetail.aspx\?did=[0-9][0-9][0-9][0-9]|", $page, $matches);
-if (!empty($matches[0])) {
-    // Step 3: Write the links to a file.
-    $numberOfLinks = count($matches[0]);
-    $file = date("Y-m-d") . ".txt";
-    echo "Found $numberOfLinks links. Writing to file $file...\n";
-    // Write the file
-    file_put_contents("$tempDir/$file", implode("\n", $matches[0]));
-    // Also update all.txt with the matches.
-    echo "Updating all.txt with the matches.\n";
-    file_put_contents("months/all.txt", "\n" . implode("\n", $matches[0]), FILE_APPEND);
-    // Step 4: Download all the audio files.
-    echo "Download all the audio files.\n";
-    downloadAudio("$tempDir/$file");
-    // Step 5: Download all the pdf files.
-    echo "Download all the pdf files.\n";
-    downloadPdf("$tempDir/$file");
-    // Step 6: Download all the word files.
-    echo "Download all the word files.\n";
-    downloadWord("$tempDir/$file");
-} else {
-    echo "No links found. Exiting...\n";
-    exit;
-}
-*/
