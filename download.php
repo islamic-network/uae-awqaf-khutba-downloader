@@ -9,8 +9,8 @@
 // Calculate the date for the current and next Friday.
 //$friday = new DateTime('next friday');
 // Or manually specify a friday date.
-$friday = new DateTime('2024-01-12');
-//$friday = new DateTime('now', new DateTimeZone('Asia/Dubai'));
+//$friday = new DateTime('2024-02-02');
+$friday = new DateTime('now', new DateTimeZone('Asia/Dubai'));
 $date = $friday->format('d-m-Y');
 
 echo "Checking for " . $friday->format('r') . "...\n";
@@ -23,9 +23,9 @@ $outputDir = "downloads/";
 $downloadable  = [];
 $downloadedFiles = [];
 
-
 // Get sermon title
-$title = "The_Night_Journey_and_Heavenly_Ascension";
+$title = "Maintainers of the Mosques";
+$title = str_replace(" ", "_", $title);
 
 foreach ($baseUrls as $baseUrl) {
     foreach ($strings_to_check as $string) {
@@ -71,10 +71,10 @@ foreach ($downloadable as $extension => $urls) {
 // Upload the files to the 2 storage drives
 foreach ($downloadedFiles as $ext => $df) {
     foreach ($df as $f) {
-        echo "Uploading $f to Helsinki...\n";
-        echo shell_exec("scp -vvv -P 23 $f u389829@nas.helsinki.mamluk.net:/home/islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
-        echo "Uploading $f to Falkenstein...\n";
-        echo shell_exec("scp -vvv -P 23 $f u389747@nas.falkenstein.mamluk.net:/home/islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
+        echo "Uploading $f to Falkenstein Backup Storage...\n";
+        echo shell_exec("scp -P 23 $f u389747@nas.falkenstein.mamluk.net:/home/islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
+        echo "Push to s3 bucket...\n";
+        echo shell_exec("s3cmd -c ~/.s3cfg_bb $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
     }
 
 }
