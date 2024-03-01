@@ -24,7 +24,7 @@ $downloadable  = [];
 $downloadedFiles = [];
 
 // Get sermon title
-$title = "Maintainers of the Mosques";
+$title = "Prayer at its appointed time";
 $title = str_replace(" ", "_", $title);
 
 foreach ($baseUrls as $baseUrl) {
@@ -74,7 +74,7 @@ foreach ($downloadedFiles as $ext => $df) {
         echo "Uploading $f to Falkenstein Backup Storage...\n";
         echo shell_exec("scp -P 23 $f u389747@nas.falkenstein.mamluk.net:/home/islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
         echo "Push to s3 bucket...\n";
-        echo shell_exec("s3cmd -c ~/.s3cfg_bb $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
+        echo shell_exec("s3cmd -c ~/.s3cfg_bb sync -v $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
     }
 
 }
