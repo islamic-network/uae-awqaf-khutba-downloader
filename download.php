@@ -9,22 +9,32 @@
 // Calculate the date for the current and next Friday.
 //$friday = new DateTime('next friday');
 // Or manually specify a friday date.
-//$friday = new DateTime('2024-02-02');
+//$friday = new DateTime('2024-05-31');
 $friday = new DateTime('now', new DateTimeZone('Asia/Dubai'));
 $date = $friday->format('d-m-Y');
+$wait = 1;
+$arrContextOptions = array(
+      "ssl" => array(
+        "verify_peer" => false,
+        "verify_peer_name" => false,
+      )
+);
+
+$context = stream_context_create($arrContextOptions);
 
 echo "Checking for " . $friday->format('r') . "...\n";
 
 // Check all file formats.
-$baseUrls = ["https://m.awqaf.ae/Uploads/AudioFridaySermons", "https://m.awqaf.ae/uploads/Friday_speach"];
-$strings_to_check = ['n-ar', '-n-ar' , '-ar', '-ur', '-en'];
+$baseUrls = ["https://mobileappapi.awqaf.gov.ae/APIS/TempUploads/KhutbaAttachment"];
+//$baseUrls = ["https://mobileappapi.awqaf.gov.ae/APIS/TempUploads/KhutbaAttachment", "https://m.awqaf.ae/Uploads/AudioFridaySermons", "https://m.awqaf.ae/uploads/Friday_speach"];
+$strings_to_check = ['-ar', '-ur', '-en'];
 $extensions = ['mp3', 'pdf', 'doc'];
 $outputDir = "downloads/";
 $downloadable  = [];
 $downloadedFiles = [];
 
 // Get sermon title
-$title = "The Gates of Paradise";
+$title = "The Blessing of Long Life";
 $title = str_replace(" ", "_", $title);
 
 foreach ($baseUrls as $baseUrl) {
@@ -32,18 +42,21 @@ foreach ($baseUrls as $baseUrl) {
         foreach ($extensions as $extension) {
             $url = "$baseUrl/$date$string.$extension";
             echo "Checking $url\n";
-            $headers = get_headers($url);
+            $headers = get_headers($url, false, $context);
             if (strpos($headers[0], '200') !== false) {
                 $downloadable[$extension][] = $url;
                 echo "Found $url\n";
             }
+	    echo "Wait $wait seconds incase there is throttling\n";
+	    sleep($wait);
+
         }
     }
 }
 
-echo "\n" . @implode("\n", $downloadable['mp3']);
-echo "\n" . @implode("\n", $downloadable['doc']);
-echo "\n" . @implode("\n", $downloadable['pdf']);
+//echo "\n" . @implode("\n", $downloadable['mp3']);
+//echo "\n" . @implode("\n", $downloadable['doc']);
+//echo "\n" . @implode("\n", $downloadable['pdf']);
 echo "\n";
 
 foreach ($downloadable as $extension => $urls) {
@@ -61,11 +74,14 @@ foreach ($downloadable as $extension => $urls) {
         $newDate = $year . '-' . $month . '-' . $day . '-' . $language;
         $downloadName =$outputDir . $extension . '/' . $newDate . '-' . $title . '.' . $extension;
         echo "Downloading $url...\n";
-        $a = file_get_contents($url);
+        $a = file_get_contents($url, false, $context);
         echo "Writing file $url to disk at $downloadName...\n";
         file_put_contents($downloadName, $a);
         $downloadedFiles[$extension][] = $downloadName;
         echo "Done!\n";
+	echo "Wait $wait seconds incase there is throttling\n";
+	sleep($wait);
+
     }
 }
 // Upload the files to the 2 storage drives
@@ -74,7 +90,8 @@ foreach ($downloadedFiles as $ext => $df) {
         echo "Uploading $f to Falkenstein Backup Storage...\n";
         echo shell_exec("scp -P 23 $f u389747@nas.falkenstein.mamluk.net:/home/islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
         echo "Push to s3 bucket...\n";
-        echo shell_exec("s3cmd -c ~/.s3cfg_bb put -v $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
+        //echo shell_exec("s3cmd -c ~/.s3cfg_bb put -v $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
+        echo shell_exec("s3cmd put -v $f s3://islamic-network-cdn/sermons/uae-awqaf/$ext/") . "\n";
     }
 
 }
