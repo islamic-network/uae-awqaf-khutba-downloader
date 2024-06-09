@@ -13,12 +13,19 @@ $friday = new DateTime('2024-06-07');
 //$friday = new DateTime('now', new DateTimeZone('Asia/Dubai'));
 $date = $friday->format('d-m-Y');
 $wait = 1;
-$arrContextOptions = array(
-      "ssl" => array(
+$arrContextOptions = [
+   "ssl" => [
         "verify_peer" => false,
         "verify_peer_name" => false,
-      )
-);
+    ],
+    "http" => [
+        "method" => "GET",
+        "header" => "Host: mobileappapi.awqaf.gov.aeen\r\n" .
+        "Referer: https://www.awqaf.gov.ae/\r\n"
+    ]
+
+    ]
+;
 
 $context = stream_context_create($arrContextOptions);
 
@@ -33,76 +40,68 @@ $downloadable  = [];
 $downloadedFiles = [];
 // Get sermon title
 $titleOrig = "Welcoming the Blessed Ten Days";
-$title = str_replace(" ", "_", $titleOrig);
+$title = str_replace([" ", "-"], ["_", "_"], $titleOrig);
 $titleEn = $titleOrig;
-$titleAr = "%D9%8A%D8%A7%20%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D8%A8%D8%A7%D9%84%D8%B9%D8%B4%D8%B18";
-$titleUr = "%D8%B9%D8%B4%D8%B1%DB%82%20%D8%B0%D9%89%20%D8%A7%D9%84%D8%AD%D9%90%D8%AC%D9%91%D9%8E%DB%81%20%D9%83%D9%89%20%D9%81%D8%B6%D9%8A%D9%84%D8%AA"; 
-$strings_to_check = ['-ar', '-ur', '-en', $titleEn.'-en', $titleAr.'-ar', $titleUr.'-ur'];
+$titleAr = "يا%20مرحبا%20بالعشر8";
+$titleUr = "عشرۂ%20ذى%20الحِجَّہ%20كى%20فضيلت";
+//$strings_to_check = ["$date-ar", "$date-ur", "$date-en", $titleEn.'-en', $titleAr.'-ar', $titleUr.'-ur'];
+$strings_to_check = [$titleEn.'-en', $titleAr.'-ar', $titleUr.'-ur'];
 
 foreach ($baseUrls as $baseUrl) {
     foreach ($strings_to_check as $string) {
         foreach ($extensions as $extension) {
 	    $lsplit = explode('-', $string);
 	    $lang = $lsplit[1];
-            $url = "$baseUrl/$date$string.$extension";
-            echo "Checking $url\n";
-            $headers = get_headers($url, false, $context);
-	    //var_dump($url, $headers);
-            if (strpos($headers[0], '200') !== false) {
-                $downloadable[$extension][] = ['url' =>  $url, 'lang' => $lang];
-                echo "Found $url\n";
-	    }
-	    $string2 = urldecode($lsplit[0]);	
-            $url2 = "$baseUrl/$string2.$extension";
-            echo "Checking $url2\n";
-            $headers = get_headers($url2, false, $context);
-            if (strpos($headers[0], '200') !== false) {
-                $downloadable[$extension][] = ['url' =>  $url2, 'lang' => $lang];
-                echo "Found $url2\n";
-            }
-	    echo "Wait $wait seconds incase there is throttling\n";
+        $url = "$baseUrl/" . $lsplit[0] .".$extension";
+        echo "Checking $url...";
+        $headers = get_headers($url, false, $context);
+        var_dump($headers);
+        if ($headers[0] === "HTTP/1.1 200 OK") {
+            $downloadable[$extension][] = ['url' =>  $url, 'lang' => $lang];
+            echo "found!\n";
+	    } else {
+            echo "not found!\n";
+        }
 	    sleep($wait);
 
         }
     }
 }
 
-//echo "\n" . @implode("\n", $downloadable['mp3']);
-//echo "\n" . @implode("\n", $downloadable['doc']);
-//echo "\n" . @implode("\n", $downloadable['pdf']);
-//echo "\n";
-
-var_dump($downloadable);
-exit;
 foreach ($downloadable as $extension => $urls) {
     foreach ($urls as $url) {
 	$lang = $url['lang'];
 	$url = $url['url'];
-        $parts = explode('/', $url);
-        $tParts = count($parts);
-        //$datemp3 = $parts[$tParts - 1];
-        //$dx = explode('.', $datemp3);
-        //$date = $dx[0];
-        $dt = explode("-", $date);
-        $day = $dt[0];
-        $month = $dt[1];
-        $year = str_replace("n", "", $dt[2]);
-        $language = $lang;
-        $newDate = $year . '-' . $month . '-' . $day . '-' . $language;
-        $downloadName =$outputDir . $extension . '/' . $newDate . '-' . $title . '.' . $extension;
-        echo "Downloading $url...\n";
-	var_dump($url);
-	break;
-        $a = file_get_contents($url, false, $context);
-        echo "Writing file $url to disk at $downloadName...\n";
-        file_put_contents($downloadName, $a);
-        $downloadedFiles[$extension][] = $downloadName;
-        echo "Done!\n";
-	echo "Wait $wait seconds incase there is throttling\n";
+    $parts = explode('/', $url);
+    $tParts = count($parts);
+    //$datemp3 = $parts[$tParts - 1];
+    //$dx = explode('.', $datemp3);
+    //$date = $dx[0];
+    $dt = explode("-", $date);
+    $day = $dt[0];
+    $month = $dt[1];
+    $year = str_replace("n", "", $dt[2]);
+    $language = $lang;
+    $newDate = $year . '-' . $month . '-' . $day . '-' . $language;
+    $downloadName = $outputDir . $extension . '/' . $newDate . '-' . $title . '.' . $extension;
+    //echo "Downloading $url...\n";
+    //$a = file_get_contents($url, false, $context);
+    echo "Downloading and Writing file $url to disk at $downloadName...";
+    //file_put_contents($downloadName, $a);
+    $downloadedFiles[$extension][] = $downloadName;
+    if ($language === 'en') {
+        shell_exec('wget -O "' . $downloadName .'" ' . str_replace(" ", "%20", $url));
+    } else {
+        shell_exec('wget -O "' . $downloadName . '" ' . $url);
+    }
+    echo "Done!\n";
+	//echo "Wait $wait seconds incase there is throttling\n";
 	sleep($wait);
 
     }
 }
+
+exit;
 // Upload the files to the 2 storage drives
 foreach ($downloadedFiles as $ext => $df) {
     foreach ($df as $f) {
