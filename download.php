@@ -18,11 +18,11 @@ $arrContextOptions = [
         "verify_peer" => false,
         "verify_peer_name" => false,
     ],
-    "http" => [
-        "method" => "GET",
-        "header" => "Host: mobileappapi.awqaf.gov.aeen\r\n" .
-        "Referer: https://www.awqaf.gov.ae/\r\n"
-    ]
+    //"http" => [
+    //    "method" => "GET",
+    //    "header" => "Host: mobileappapi.awqaf.gov.aeen\r\n" .
+    //    "Referer: https://www.awqaf.gov.ae/\r\n"
+    //]
 
     ]
 ;
@@ -45,17 +45,16 @@ $titleEn = $titleOrig;
 $titleAr = "يا%20مرحبا%20بالعشر8";
 $titleUr = "عشرۂ%20ذى%20الحِجَّہ%20كى%20فضيلت";
 //$strings_to_check = ["$date-ar", "$date-ur", "$date-en", $titleEn.'-en', $titleAr.'-ar', $titleUr.'-ur'];
-$strings_to_check = [$titleEn.'-en', $titleAr.'-ar', $titleUr.'-ur'];
+$strings_to_check = ["$titleEn::en", "$titleAr::ar", "$titleUr::ur", "مرحبًا%20بالعشر.lite::ar", "$date-en::en", "$date-ar::ar", "$date-ur::ur"];
 
 foreach ($baseUrls as $baseUrl) {
     foreach ($strings_to_check as $string) {
         foreach ($extensions as $extension) {
-	    $lsplit = explode('-', $string);
+	    $lsplit = explode('::', $string);
 	    $lang = $lsplit[1];
         $url = "$baseUrl/" . $lsplit[0] .".$extension";
         echo "Checking $url...";
         $headers = get_headers($url, false, $context);
-        var_dump($headers);
         if ($headers[0] === "HTTP/1.1 200 OK") {
             $downloadable[$extension][] = ['url' =>  $url, 'lang' => $lang];
             echo "found!\n";
@@ -63,7 +62,6 @@ foreach ($baseUrls as $baseUrl) {
             echo "not found!\n";
         }
 	    sleep($wait);
-
         }
     }
 }
@@ -89,10 +87,14 @@ foreach ($downloadable as $extension => $urls) {
     echo "Downloading and Writing file $url to disk at $downloadName...";
     //file_put_contents($downloadName, $a);
     $downloadedFiles[$extension][] = $downloadName;
-    if ($language === 'en') {
+    shell_exec('wget -O "' . $downloadName .'" ' . str_replace(" ", "%20", $url));
+    /*if ($language === 'en') {
         shell_exec('wget -O "' . $downloadName .'" ' . str_replace(" ", "%20", $url));
     } else {
         shell_exec('wget -O "' . $downloadName . '" ' . $url);
+    }*/
+    if (filesize($downloadName) < 2) {
+        unlink($downloadName);
     }
     echo "Done!\n";
 	//echo "Wait $wait seconds incase there is throttling\n";
@@ -101,7 +103,6 @@ foreach ($downloadable as $extension => $urls) {
     }
 }
 
-exit;
 // Upload the files to the 2 storage drives
 foreach ($downloadedFiles as $ext => $df) {
     foreach ($df as $f) {
