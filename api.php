@@ -119,7 +119,7 @@ function prep($fx, $format, $fridays, &$sermons) {
     $source = 'uae-awqaf';
 
     foreach($fx as $file) {
-        if (strpos($file, '.mp3') !== false || strpos($file, '.doc') !== false || strpos($file, '.pdf') !== false) {
+        if (strpos($file, '.mp3') !== false || strpos($file, '.docx') !== false ||  strpos($file, '.doc') !== false || strpos($file, '.pdf') !== false) {
             $parts = explode("/", $file);
             //$df = $parts[2];
             $dx = explode("-", $parts[2]);
