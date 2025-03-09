@@ -1,0 +1,25 @@
+services:
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - driver
+    command: php standalone/khutba-scraper.php
+    volumes:
+      - .:/var/www
+    privileged: true
+    container_name: awqaf_scraper
+
+  driver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "chromedriver --port=4444 --url-base=wd/hub"
+    ports:
+      - "4444:4444"
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=driver
+      - HUB_PORT_4444_TCP_PORT=4444
+    privileged: true
+    container_name: chrome_driver
