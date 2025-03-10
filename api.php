@@ -13,21 +13,10 @@ for ($i = $for_start; $i <= $for_end; $i = strtotime('+1 week', $i)) {
     }
 }
 
-$iteratorMp3 = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('downloads/mp3'));
-$mp3s = array_keys(array_filter(iterator_to_array($iteratorMp3), function($file) {
-    return $file->isFile();
-}));
-
-$iteratorPdf = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('downloads/pdf'));
-$pdfs = array_keys(array_filter(iterator_to_array($iteratorPdf), function($file) {
-    return $file->isFile();
-}));
-
-$iteratorDoc = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('downloads/doc'));
-$docs = array_keys(array_filter(iterator_to_array($iteratorDoc), function($file) {
-    return $file->isFile();
-}));
-
+// MP3 array
+$mp3s = (parseS3cmdLs('downloads/mp3/mp3.txt'));
+$pdfs = (parseS3cmdLs('downloads/pdf/pdf.txt'));
+$docs = (parseS3cmdLs('downloads/doc/doc.txt'));
 $sermons = [];
 prep($mp3s, 'mp3', $fridays, $sermons);
 prep($docs, 'doc', $fridays, $sermons);
@@ -52,7 +41,7 @@ foreach($sermons as $year => $type) {
 }
 
 // Normalise
-$years = [2024];
+$years = [2015, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
 $months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 
 // Now let's write the files
@@ -97,17 +86,19 @@ foreach ($years as $year) {
         file_put_contents("api/uae-awqaf/$year/other.json", json_encode(array_values($sermons[$year]['other'])));
         file_put_contents("yaml/uae-awqaf/$year/other.yml", \Symfony\Component\Yaml\Yaml::dump(array_values($sermons[$year]['other'])));
     }
-    foreach ($sermons[$year] as $st => $sb) {
-        //$sermons[$year][$st]['type'] = $st;
-        foreach ($sermons[$year][$st] as $mx => $mk) {
-            file_put_contents("api/uae-awqaf/$year/$mx.json", json_encode([$mk]));
-            file_put_contents("yaml/uae-awqaf/$year/$mx.yml", \Symfony\Component\Yaml\Yaml::dump([$mk]));
-            $sermons[$year][] = $mk;
-            unset($sermons[$year][$st]);
+    if (isset($sermons[$year])) {
+        foreach ($sermons[$year] as $st => $sb) {
+            //$sermons[$year][$st]['type'] = $st;
+            foreach ($sermons[$year][$st] as $mx => $mk) {
+                file_put_contents("api/uae-awqaf/$year/$mx.json", json_encode([$mk]));
+                file_put_contents("yaml/uae-awqaf/$year/$mx.yml", \Symfony\Component\Yaml\Yaml::dump([$mk]));
+                $sermons[$year][] = $mk;
+                unset($sermons[$year][$st]);
+            }
         }
+        file_put_contents("api/uae-awqaf/$year.json", json_encode(array_values($sermons[$year])));
+        file_put_contents("yaml/uae-awqaf/$year.yml", \Symfony\Component\Yaml\Yaml::dump(array_values($sermons[$year])));
     }
-    file_put_contents("api/uae-awqaf/$year.json", json_encode(array_values($sermons[$year])));
-    file_put_contents("yaml/uae-awqaf/$year.yml", \Symfony\Component\Yaml\Yaml::dump(array_values($sermons[$year])));
 }
 
 file_put_contents("api/sources.json", json_encode($sources));
@@ -115,19 +106,47 @@ file_put_contents("yaml/sources.yml", \Symfony\Component\Yaml\Yaml::dump($source
 file_put_contents("api/languages.json", json_encode($languages));
 file_put_contents("yaml/languages.yml", \Symfony\Component\Yaml\Yaml::dump($languages));
 
+function parseS3cmdLs(string $file): array
+{
+    $result = [];
+    $data = file_get_contents($file);
+    $line = explode("\n", $data);
+    foreach ($line as $l) {
+        $segments = explode(" ", $l);
+        foreach ($segments as $key => $segment) {
+            if ($segment === "") {
+                unset($segments[$key]);
+            }
+        }
+        $segments = array_values($segments);
+        if (isset($segments[3]) && str_contains($segments[3], 's3://')) {
+            $result[] = $segments[3];
+        }
+        // Each result array contains, in the order:
+        // Upload date, upload time, size, s3url
+    }
+
+    return $result;
+}
+
 function prep($fx, $format, $fridays, &$sermons) {
     $source = 'uae-awqaf';
-
     foreach($fx as $file) {
         if (strpos($file, '.mp3') !== false || strpos($file, '.docx') !== false ||  strpos($file, '.doc') !== false || strpos($file, '.pdf') !== false) {
             $parts = explode("/", $file);
+            $partsTotal = count($parts);
             //$df = $parts[2];
-            $dx = explode("-", $parts[2]);
+            $dx = explode("-", $parts[$partsTotal - 1]);
             $datex = $dx[0] . '-' . $dx[1] . '-' . $dx[2];
             $lang = $dx[3];
+            //var_dump($file);
             $title = trim(str_replace("_", " ", explode('.', $dx[4])[0]));
-            $url = "https://cdn.islamic.network/sermons/uae-awqaf/$format/" . $parts[2];
-            $date = new DateTime(str_replace("-", "/", $datex), new DateTimeZone('Asia/Dubai'));
+            $url = "https://cdn.islamic.network/sermons/uae-awqaf/$format/" . $parts[$partsTotal - 1];
+            $date = DateTime::createFromFormat('Y-m-j', $datex, new DateTimeZone('Asia/Dubai'));
+            if (!$date) {
+                var_dump($datex);
+                continue;
+            }
             $dateObj = [
                 'iso8601' => $date->format('c'),
                 'month' => ['name' => $date->format('F'), 'shortname' => $date->format('M'), 'number' => $date->format('m')],
