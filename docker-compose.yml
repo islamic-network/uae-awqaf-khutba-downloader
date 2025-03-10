@@ -13,7 +13,7 @@ services:
 
   driver:
     image: selenium/standalone-chromium:latest
-    command: bash -c "chromedriver --port=4444 --url-base=wd/hub"
+    command: bash -c "chromedriver --allowed-ips=172.17.0.1 --port=4444 --url-base=wd/hub"
     ports:
       - "4444:4444"
     environment:
