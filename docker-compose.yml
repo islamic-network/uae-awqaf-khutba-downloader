@@ -12,9 +12,7 @@ services:
     container_name: awqaf_scraper
 
   driver:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: selenium/standalone-chromium:latest
     command: bash -c "chromedriver --port=4444 --url-base=wd/hub"
     ports:
       - "4444:4444"
