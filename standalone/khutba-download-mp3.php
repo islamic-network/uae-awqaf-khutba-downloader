@@ -6,7 +6,8 @@ use Exception;
 
 function downloadMp3(mixed $data): void
 {
-    $dir = '/home/zaid/code/uae-awqaf-khutba-downloader/mp3/';
+    $path = realpath(__DIR__ . '/../');
+    $dir = $path . '/mp3/';
     echo 'Downloading .mp3 files...' . "\n";
     foreach ($data as $month) {
         foreach ($month as $day) {

@@ -6,7 +6,8 @@ use Exception;
 
 function downloadDoc(mixed $data)
 {
-    $dir = '/home/zaid/code/uae-awqaf-khutba-downloader/doc/';
+    $path = realpath(__DIR__ . '/../');
+    $dir = $path . '/doc/';
     echo 'Downloading .docx files...' . "\n";
     foreach ($data as $month) {
         foreach ($month as $day) {

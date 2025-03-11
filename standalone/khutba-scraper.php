@@ -56,11 +56,14 @@ function mainScript(string $year = null, string $month = null, string $date = nu
         );
         $driver->executeScript('window.scrollTo(0, 750);');
         sleep(2);
-        $card = $driver->findElement(WebDriverBy::className('pt-5'))
-            ->findElement(WebDriverBy::className('Friday-Khutba-In'))
-            ->findElement(WebDriverBy::xpath('//*[@id="pills-tabContent"]'))
-            ->findElement(WebDriverBy::xpath('//*[@id="pills-2022"]/div/div/div[' . $i . ']'));
-
+        if (!empty($year) && !empty($month)) {
+            $card = $driver->findElement(WebDriverBy::className('pt-5'))
+                ->findElement(WebDriverBy::className('Friday-Khutba-In'))
+                ->findElement(WebDriverBy::xpath('//*[@id="pills-tabContent"]'))
+                ->findElement(WebDriverBy::xpath('//*[@id="pills-2022"]/div/div/div[' . $i . ']'));
+        } elseif (!empty($date)) {
+            $card = $driver->findElement(WebDriverBy::xpath("//h3[text()='" . $formatDate . "']/ancestor-or-self::a/.."));
+        }
         $card->click();
         $driver->wait(60)->until(
             WebDriverExpectedCondition::textToBePresentInElement(WebDriverBy::className('title-text-small'), 'Friday Sermon Date')
@@ -117,7 +120,7 @@ function mainScript(string $year = null, string $month = null, string $date = nu
 
 function getDriverObject(array $prefs = null): RemoteWebDriver
 {
-    $host = 'http://driver:4444/wd/hub';
+    $host = 'http://127.0.0.1:4444/wd/hub';
     $args = [];
     $args[] = '--start-maximized=true';
     $args[] = '--disable-popup-blocking=true';
@@ -168,15 +171,16 @@ function getFileName(string $title, string $date, string $lang): string
 
 function downloadFile(string $url, string $dir, string $newFileName)
 {
-    $ch = curl_init($url);
     $saveFilePath = $dir . $newFileName;
-    $fp = fopen($saveFilePath, 'wb');
-    curl_setopt($ch, CURLOPT_FILE, $fp);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_exec($ch);
+    $data = curl_exec($ch);
+    if (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 200) {
+        file_put_contents($saveFilePath, $data);
+    }
     curl_close($ch);
-    fclose($fp);
 }
 
-//mainScript(null, null, '07/3/2025');
-mainScript('2025', '1', null);
+//mainScript(null, null, '08/11/2024');
+mainScript('2024', '11');

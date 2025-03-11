@@ -5,7 +5,8 @@ use Exception;
 
 function downloadPdf(mixed $data): void
 {
-    $dir = '/home/zaid/code/uae-awqaf-khutba-downloader/pdf/';
+    $path = realpath(__DIR__ . '/../');
+    $dir = $path . '/pdf/';
     echo 'Downloading .pdf files...' . "\n";
     foreach($data as $month) {
         foreach ($month as $day) {
