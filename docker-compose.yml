@@ -4,20 +4,23 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - driver
+      - selenium
+    links:
+      - selenium
     command: php standalone/khutba-scraper.php
     volumes:
       - .:/var/www
     privileged: true
     container_name: awqaf_scraper
 
-  driver:
+  selenium:
     image: selenium/standalone-chromium:latest
-    command: bash -c "chromedriver --allowed-ips=172.17.0.1 --port=4444 --url-base=wd/hub"
+    command: bash -c "chromedriver --whitelisted-ips='' --allowed-origins='*' --port=4444 --url-base=wd/hub"
     ports:
       - "4444:4444"
     environment:
       - HUB_PORT_4444_TCP_ADDR=driver
       - HUB_PORT_4444_TCP_PORT=4444
     privileged: true
-    container_name: chrome_driver
+    shm_size: 2g
+    container_name: selenium
