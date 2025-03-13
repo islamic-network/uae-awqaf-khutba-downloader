@@ -160,27 +160,7 @@ function checkElement(RemoteWebDriver $driver, string $elem): string
     }
 }
 
-function getFileName(string $title, string $date, string $lang): string
-{
-    $temp = preg_replace('/[^a-zA-Z0-9 ]/s', '', $title);
-    $newTitleFormat = str_replace(' ', '_', $temp);
-    $newDateFormat = date_create_from_format('d M Y', $date)->format('Y-m-d');
 
-    return $newDateFormat . '-' . $lang . '-' . $newTitleFormat;
-}
-
-function downloadFile(string $url, string $dir, string $newFileName)
-{
-    $saveFilePath = $dir . $newFileName;
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    $data = curl_exec($ch);
-    if (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 200) {
-        file_put_contents($saveFilePath, $data);
-    }
-    curl_close($ch);
-}
 
 //mainScript(null, null, '08/11/2024');
 mainScript('2024', '11');
