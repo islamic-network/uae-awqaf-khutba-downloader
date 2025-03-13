@@ -2,13 +2,10 @@
 namespace Facebook\WebDriver;
 
 use Facebook\WebDriver\Chrome\ChromeOptions;
-use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 
-require __DIR__ . '/khutba-download-pdf.php';
-require __DIR__ . '/khutba-download-mp3.php';
-require __DIR__ . '/khutba-download-doc.php';
+require __DIR__ . '/functions.php';
 
 require_once('vendor/autoload.php');
 
@@ -29,10 +26,10 @@ function mainScript(string $year = null, string $month = null, string $date = nu
 
         $driver->navigate()->to('https://www.awqaf.gov.ae/khutba-archive?year=' . $y . '&month=' . $m . '&lang=en');
     }
-    $driver->wait(60)->until(
+    $driver->wait(7)->until(
         WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::className('Friday-Khutba-In'))
     );
-    $driver->wait(60)->until(
+    $driver->wait(7)->until(
         WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::xpath('//*[@id="pills-tabContent"]'))
     );
 
@@ -47,11 +44,11 @@ function mainScript(string $year = null, string $month = null, string $date = nu
 
     echo 'Total number of cards to scrape: ' . count($cards) . "\n";
     foreach (range(1, count($cards)) as $i) {
-        $driver->wait(60)->until(
+        echo "Processing Card $i... \n";
+        $driver->wait(10)->until(
             WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::className('Friday-Khutba-In'))
         );
-
-        $driver->wait(60)->until(
+        $driver->wait(10)->until(
             WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::xpath('//*[@id="pills-tabContent"]'))
         );
         $driver->executeScript('window.scrollTo(0, 750);');
@@ -64,8 +61,10 @@ function mainScript(string $year = null, string $month = null, string $date = nu
         } elseif (!empty($date)) {
             $card = $driver->findElement(WebDriverBy::xpath("//h3[text()='" . $formatDate . "']/ancestor-or-self::a/.."));
         }
+
         $card->click();
-        $driver->wait(60)->until(
+
+        $driver->wait(10)->until(
             WebDriverExpectedCondition::textToBePresentInElement(WebDriverBy::className('title-text-small'), 'Friday Sermon Date')
         );
 
@@ -77,7 +76,7 @@ function mainScript(string $year = null, string $month = null, string $date = nu
             $pdf = '';
             $doc = '';
 
-            $driver->wait(60)->until(
+            $driver->wait(10)->until(
                 WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::xpath("//div[@class='arabic-event']"))
             );
 
@@ -89,6 +88,7 @@ function mainScript(string $year = null, string $month = null, string $date = nu
                     ->getText();
 
                 $title = $driver->findElement(WebDriverBy::xpath("//div[@class='banner-content']/h1"))->getText();
+                echo "KHUTBA :: $title\n";
             }
             $mp3 = checkElement($driver, 'mp3');
             $pdf = checkElement($driver, 'pdf');
@@ -138,29 +138,7 @@ function getDriverObject(array $prefs = null): RemoteWebDriver
     return $driver;
 }
 
-function checkElement(RemoteWebDriver $driver, string $elem): string
-{
-    try {
-        $element = '';
-        if ($elem === 'mp3') {
-            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Download']/ancestor-or-self::a"))
-                ->getAttribute('href');
-        } elseif ($elem === 'pdf') {
-            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='PDF']/ancestor-or-self::a"))
-                ->getAttribute('href');
-        } elseif ($elem === 'doc') {
-            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Documents']/ancestor-or-self::a"))
-                ->getAttribute('href');
-        }
-
-        return $element;
-    } catch (NoSuchElementException $e) {
-
-        return '';
-    }
-}
-
 
 
 //mainScript(null, null, '08/11/2024');
-mainScript('2024', '11');
+mainScript('2025', '01');

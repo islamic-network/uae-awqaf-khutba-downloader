@@ -2,10 +2,12 @@
 namespace Facebook\WebDriver;
 
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 
 function downloadDoc(mixed $data)
 {
-    $path = realpath(__DIR__ . '/../');
+    $path = realpath(__DIR__ . '/../downloads/');
     $dir = $path . '/doc/';
     echo 'Downloading .docx files...' . "\n";
     foreach ($data as $month) {
@@ -27,7 +29,7 @@ function downloadDoc(mixed $data)
 
 function downloadMp3(mixed $data): void
 {
-    $path = realpath(__DIR__ . '/../');
+    $path = realpath(__DIR__ . '/../downloads/');
     $dir = $path . '/mp3/';
     echo 'Downloading .mp3 files...' . "\n";
     foreach ($data as $month) {
@@ -55,7 +57,7 @@ function downloadMp3(mixed $data): void
 
 function downloadPdf(mixed $data): void
 {
-    $path = realpath(__DIR__ . '/../');
+    $path = realpath(__DIR__ . '/../downloads/');
     $dir = $path . '/pdf/';
     echo 'Downloading .pdf files...' . "\n";
     foreach($data as $month) {
@@ -96,4 +98,30 @@ function downloadFile(string $url, string $dir, string $newFileName)
         file_put_contents($saveFilePath, $data);
     }
     curl_close($ch);
+}
+
+function checkElement(RemoteWebDriver $driver, string $elem): string
+{
+    try {
+        $element = '';
+        if ($elem === 'mp3') {
+            echo "Checking mp3s...\n";
+            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Download']/ancestor-or-self::a"))
+                ->getAttribute('href');
+        } elseif ($elem === 'pdf') {
+            echo "Checking PDFs...\n";
+            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='PDF']/ancestor-or-self::a"))
+                ->getAttribute('href');
+        } elseif ($elem === 'doc') {
+            echo "Checking Documents...\n";
+            $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Documents']/ancestor-or-self::a"))
+                ->getAttribute('href');
+        }
+
+        return $element;
+    } catch (NoSuchElementException $e) {
+        echo 'ERROR ::: ' . $e->getMessage();
+
+        return false;
+    }
 }
