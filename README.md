@@ -25,11 +25,6 @@ s3cmd put downloads/pdf/* s3://cdn.islamic.network/sermons/uae-awqaf/pdf/
 
 ```
 
-### Secondary
-```
-
-```
-
 ## Find any issues?
 
 Please raise a PR to fix if you can or post on https://community.islamic.network for support.
