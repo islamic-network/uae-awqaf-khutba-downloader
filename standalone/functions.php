@@ -16,6 +16,7 @@ function downloadDoc(mixed $data)
                 try {
                     if (!empty($langFiles['doc'])) {
                         $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.docx';
+                        echo "Attempting to download file " . $langFiles['doc'] . " as $newFileName... \n";
                         downloadFile($langFiles['doc'], $dir, $newFileName);
                     }
                 } catch (Exception $e) {
@@ -38,7 +39,7 @@ function downloadMp3(mixed $data): void
                 try {
                     if (!empty($langFiles['mp3'])) {
                         $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']);
-
+                        echo "Attempting to download file " . $langFiles['mp3'] . " as $newFileName... \n";
                         $e = explode(".", $langFiles['mp3']);
                         if (end($e) === 'mpeg') {
                             downloadFile($langFiles['mp3'], $dir, $newFileName . '.mpeg');
@@ -66,7 +67,7 @@ function downloadPdf(mixed $data): void
                 try {
                     if (!empty($langFiles['pdf'])) {
                         $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.pdf';
-
+                        echo "Attempting to download file " . $langFiles['doc'] . " as $newFileName... \n";
                         downloadFile($langFiles['pdf'], $dir, $newFileName);
                     }
                 } catch (Exception $e) {
@@ -95,32 +96,36 @@ function downloadFile(string $url, string $dir, string $newFileName)
     curl_setopt($ch, CURLOPT_HEADER, 0);
     $data = curl_exec($ch);
     if (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 200) {
+        echo "Received a 200 for the file, saving...\n";
         file_put_contents($saveFilePath, $data);
+    } else {
+        $rCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        echo "Received a $rCode for the file, skipping...\n";
     }
     curl_close($ch);
 }
 
-function checkElement(RemoteWebDriver $driver, string $elem): string
+function checkElement(RemoteWebDriver $driver, string $elem, string $lang): string
 {
     try {
         $element = '';
         if ($elem === 'mp3') {
-            echo "Checking mp3s...\n";
+            echo "Extracting URL of  $lang mp3...";
             $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Download']/ancestor-or-self::a"))
                 ->getAttribute('href');
         } elseif ($elem === 'pdf') {
-            echo "Checking PDFs...\n";
+            echo "Extracting URL of $lang PDF...";
             $element = $driver->findElement(WebDriverBy::xpath("//button[text()='PDF']/ancestor-or-self::a"))
                 ->getAttribute('href');
         } elseif ($elem === 'doc') {
-            echo "Checking Documents...\n";
+            echo "Extracting URL of $lang Document...";
             $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Documents']/ancestor-or-self::a"))
                 ->getAttribute('href');
         }
-
+        echo "Found $element\n";
         return $element;
     } catch (NoSuchElementException $e) {
-        echo 'ERROR ::: ' . $e->getMessage();
+        echo 'ERROR ::: ' . $e->getMessage() . "\n";
 
         return false;
     }

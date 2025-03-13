@@ -90,9 +90,9 @@ function mainScript(string $year = null, string $month = null, string $date = nu
                 $title = $driver->findElement(WebDriverBy::xpath("//div[@class='banner-content']/h1"))->getText();
                 echo "KHUTBA :: $title\n";
             }
-            $mp3 = checkElement($driver, 'mp3');
-            $pdf = checkElement($driver, 'pdf');
-            $doc = checkElement($driver, 'doc');
+            $mp3 = checkElement($driver, 'mp3', $lang);
+            $pdf = checkElement($driver, 'pdf', $lang);
+            $doc = checkElement($driver, 'doc', $lang);
 
             $tempData[] = [
                 'lang' => $lang,
