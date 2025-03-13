@@ -15,7 +15,7 @@ function downloadDoc(mixed $data): void
             foreach ($day['data'] as $langFiles) {
                 try {
                     if (!empty($langFiles['doc'])) {
-                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.docx';
+                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.' . pathinfo($langFiles['doc'])['extension'];
                         echo "Attempting to download file " . $langFiles['doc'] . " as $newFileName... \n";
                         downloadFile($langFiles['doc'], $dir, $newFileName);
                     }
@@ -38,14 +38,9 @@ function downloadMp3(mixed $data): void
             foreach ($day['data'] as $langFiles) {
                 try {
                     if (!empty($langFiles['mp3'])) {
-                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']);
+                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.mp3';
                         echo "Attempting to download file " . $langFiles['mp3'] . " as $newFileName... \n";
-                        $e = explode(".", $langFiles['mp3']);
-                        if (end($e) === 'mpeg') {
-                            downloadFile($langFiles['mp3'], $dir, $newFileName . '.mpeg');
-                        } elseif (end($e) === 'mp3') {
-                            downloadFile($langFiles['mp3'], $dir, $newFileName . '.mp3');
-                        }
+                        downloadFile($langFiles['mp3'], $dir, $newFileName);
                     }
                 } catch (Exception $e) {
                     echo $e->getMessage();
@@ -66,7 +61,7 @@ function downloadPdf(mixed $data): void
             foreach ($day['data'] as $langFiles) {
                 try {
                     if (!empty($langFiles['pdf'])) {
-                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.pdf';
+                        $newFileName = getFileName($day['title'], $day['date'], $langFiles['lang']) . '.' . pathinfo($langFiles['pdf'])['extension'];
                         echo "Attempting to download file " . $langFiles['doc'] . " as $newFileName... \n";
                         downloadFile($langFiles['pdf'], $dir, $newFileName);
                     }
