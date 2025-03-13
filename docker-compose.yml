@@ -7,7 +7,7 @@ services:
       - selenium
     links:
       - selenium
-    command: php standalone/khutba-scraper.php
+    command: php standalone/khutba-scraper.php year=${year} month=${month} date=${date}
     volumes:
       - .:/var/www
     privileged: true
@@ -18,9 +18,6 @@ services:
     command: bash -c "chromedriver --whitelisted-ips='' --allowed-origins='*' --port=4444 --url-base=wd/hub"
     ports:
       - "4444:4444"
-    environment:
-      - HUB_PORT_4444_TCP_ADDR=driver
-      - HUB_PORT_4444_TCP_PORT=4444
     privileged: true
     shm_size: 2g
     container_name: selenium

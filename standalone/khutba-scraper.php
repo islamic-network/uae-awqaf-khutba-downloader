@@ -63,9 +63,8 @@ function mainScript(string $year = null, string $month = null, string $date = nu
         }
 
         $card->click();
-
         $driver->wait(10)->until(
-            WebDriverExpectedCondition::textToBePresentInElement(WebDriverBy::className('title-text-small'), 'Friday Sermon Date')
+            WebDriverExpectedCondition::elementTextContains(WebDriverBy::className('title-text-small'), 'Friday Sermon Date')
         );
 
         $tempData = [];
@@ -123,8 +122,9 @@ function getDriverObject(array $prefs = null): RemoteWebDriver
     $host = 'http://selenium:4444/wd/hub';
     $args = [];
     $args[] = '--start-maximized=true';
-    $args[] = '--disable-popup-blocking=true';
     $args[] = '--headless=true';
+    $args[] = '--disable-gpu=true';
+    $args[] = '--no-sandbox=true';
     $chromeOptions = new ChromeOptions();
     if (!empty($prefs)) {
         $chromeOptions->setExperimentalOption('prefs', $prefs);
@@ -133,12 +133,17 @@ function getDriverObject(array $prefs = null): RemoteWebDriver
 
     $capabilities = DesiredCapabilities::chrome();
     $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+    $capabilities->setPlatform("Linux");
     $driver = RemoteWebDriver::create($host, $capabilities);
 
     return $driver;
 }
 
+$args = [];
+foreach (range(1,3) as $i)
+{
+    list($key, $val) = explode('=', $argv[$i]);
+    $args[$key] = $val;
+}
 
-
-//mainScript(null, null, '08/11/2024');
-mainScript('2025', '01');
+mainScript($args['year'], $args['month'], $args['date']);

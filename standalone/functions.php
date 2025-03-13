@@ -5,7 +5,7 @@ use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 
-function downloadDoc(mixed $data)
+function downloadDoc(mixed $data): void
 {
     $path = realpath(__DIR__ . '/../downloads/');
     $dir = $path . '/doc/';
@@ -88,10 +88,12 @@ function getFileName(string $title, string $date, string $lang): string
     return $newDateFormat . '-' . $lang . '-' . $newTitleFormat;
 }
 
-function downloadFile(string $url, string $dir, string $newFileName)
+function downloadFile(string $url, string $dir, string $newFileName): void
 {
+    $baseUrl = str_replace(basename($url), '', $url);
+    $encodedUrl = $baseUrl . rawurlencode(basename($url));
     $saveFilePath = $dir . $newFileName;
-    $ch = curl_init($url);
+    $ch = curl_init($encodedUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     $data = curl_exec($ch);
@@ -105,7 +107,7 @@ function downloadFile(string $url, string $dir, string $newFileName)
     curl_close($ch);
 }
 
-function checkElement(RemoteWebDriver $driver, string $elem, string $lang): string
+function checkElement(RemoteWebDriver $driver, string $elem, string $lang): string|bool
 {
     try {
         $element = '';
