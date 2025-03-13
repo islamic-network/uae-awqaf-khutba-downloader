@@ -1,6 +1,9 @@
 {
     "require": {
         "guzzlehttp/guzzle": "^7.4",
-        "symfony/yaml": "^6.2"
+        "symfony/yaml": "^6.2",
+      "ext-curl": "*",
+        "ext-zip": "*",
+        "php-webdriver/webdriver": "^1.15"
     }
 }

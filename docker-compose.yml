@@ -1,0 +1,23 @@
+services:
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - selenium
+    links:
+      - selenium
+    command: php standalone/khutba-scraper.php year=${year} month=${month} date=${date}
+    volumes:
+      - .:/var/www
+    privileged: true
+    container_name: awqaf_scraper
+
+  selenium:
+    image: selenium/standalone-chromium:latest
+    command: bash -c "chromedriver --whitelisted-ips='' --allowed-origins='*' --port=4444 --url-base=wd/hub"
+    ports:
+      - "4444:4444"
+    privileged: true
+    shm_size: 2g
+    container_name: selenium
