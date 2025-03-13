@@ -110,7 +110,7 @@ function checkElement(RemoteWebDriver $driver, string $elem, string $lang): stri
     try {
         $element = '';
         if ($elem === 'mp3') {
-            echo "Extracting URL of  $lang mp3...";
+            echo "Extracting URL of $lang mp3...";
             $element = $driver->findElement(WebDriverBy::xpath("//button[text()='Download']/ancestor-or-self::a"))
                 ->getAttribute('href');
         } elseif ($elem === 'pdf') {
